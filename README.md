@@ -8,7 +8,7 @@ Please make sure you have python, pip, node, and nvm installed.
 npm install
 bower install
 
-Launch the b/e liek so:
+Launch the b/e like so:
 
 ```
 python backend.py
