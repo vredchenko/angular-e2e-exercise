@@ -8,9 +8,12 @@
  * Controller of the numberDuplicatesApp
  */
 angular.module('numberDuplicatesApp')
-  .controller('MainCtrl', function ($scope) {
+  .controller('MainCtrl', function ($scope, numberSetService) {
 
-    $scope.numbers = [1,1,2,2,3,3,4,4,5,5];
+    $scope.numbers = [];
+    numberSetService.get().$promise.then(function(response) {
+      $scope.numbers = response;
+    });
     
     // Game state
     $scope.gameOngoing  = true;
