@@ -38,7 +38,7 @@ angular.module('numberDuplicatesApp')
       }).length > 1;
     };
 
-    // Would be a one-liner using lo-dash
+    // Would be a one-liner using lodash
     $scope.reachedVictoryGameState = function() {
       var result = [];
       $scope.numbers.forEach( function( value ) {
