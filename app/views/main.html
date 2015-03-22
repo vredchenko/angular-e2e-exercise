@@ -1,23 +1,13 @@
-<div class="jumbotron">
-  <h1>'Allo, 'Allo!</h1>
-  <p class="lead">
-    <img src="images/yeoman.png" alt="I'm Yeoman"><br>
-    Always a pleasure scaffolding your apps.
-  </p>
-  <p><a class="btn btn-lg btn-success" ng-href="#">Splendid!<span class="glyphicon glyphicon-ok"></span></a></p>
-</div>
+<p class="game-instructions" ng-if="gameOngoing">
+  Remove duplicate numbers by clicking on them. If you eliminate a number that's not a duplicate - you loose.
+  Eliminating all duplicate numbers gets you a win.
+</p>
 
-<div class="row marketing">
-  <h4>HTML5 Boilerplate</h4>
-  <p>
-    HTML5 Boilerplate is a professional front-end template for building fast, robust, and adaptable web apps or sites.
-  </p>
+<p ng-if="defeated"> Game Over! </p>
+<p ng-if="victorious"> Victory! </p>
 
-  <h4>Angular</h4>
-  <p>
-    AngularJS is a toolset for building the framework most suited to your application development.
-  </p>
-
-  <h4>Karma</h4>
-  <p>Spectacular Test Runner for JavaScript.</p>
-</div>
+<ol>
+  <li ng-repeat="number in numbers track by $index">
+    <a href="javascript://" ng-bind="number" ng-click="playerMove( $index )" ng-disabled="!gameOngoing"></a>
+  </li>
+</ol>
