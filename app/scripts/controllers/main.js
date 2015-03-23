@@ -10,6 +10,9 @@
 angular.module('numberDuplicatesApp')
   .controller('MainCtrl', function ($scope, numberSetService) {
 
+    // Note: for a real project data retrieval, operations over that data
+    // and non-UI business logic should be abstracted away into providers. 
+
     $scope.numbers = [];
     numberSetService.get().$promise.then(function(response) {
       $scope.numbers = response;
