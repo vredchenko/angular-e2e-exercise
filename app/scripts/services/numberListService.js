@@ -1,5 +1,7 @@
+'use strict';
+
 angular.module('numberDuplicatesApp')
-  .service('numberSetService', ['$resource', function($resource) {
+  .service('numberListService', ['$resource', function($resource) {
     var endpointUrl = 'http://127.0.0.1:5000';
     return $resource(endpointUrl, null, {
       'get': {

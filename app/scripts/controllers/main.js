@@ -8,13 +8,13 @@
  * Controller of the numberDuplicatesApp
  */
 angular.module('numberDuplicatesApp')
-  .controller('MainCtrl', function ($scope, numberSetService) {
+  .controller('MainCtrl', function ($scope, numberListService) {
 
     // Note: for a real project data retrieval, operations over that data
     // and non-UI business logic should be abstracted away into providers. 
 
     $scope.numbers = [];
-    numberSetService.get().$promise.then(function(response) {
+    numberListService.get().$promise.then(function(response) {
       $scope.numbers = response;
     });
     

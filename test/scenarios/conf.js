@@ -13,4 +13,16 @@ exports.config = {
 , jasmineNodeOpts: {
     showColors: true, // Use colors in the command line report.
   }
+
+// , capabilites: {
+//     browserName: 'chrome'
+//   }
+
+// , plugins: [{
+//     path: 'node_modules/protractor/plugins/accessibility',
+//     chromeA11YDevTools: {
+//       treatWarningsAsFAilures: false
+//     }
+//   }]
+
 };

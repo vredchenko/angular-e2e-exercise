@@ -1,87 +1,137 @@
-var NumberGamePage = function() {
-  this.numbers = element.all( by.repeater('number in numbers') );
-  this.gameRules = element( by.css('.game-instructions') );
+'use strict';
 
-  this.get = function() {
+// Organise SPA-related stuff
+var GamePage = function() {
+
+  // DOM element selectors
+  this.numbers        = element.all( by.repeater('number in numbers') );
+  this.gameRules      = element( by.css('.game-instructions') );
+  this.defeatMessage  = element( by.css('.game-over') );
+  this.victoryMessage = element( by.css('.victory') );
+  
+  this.loadSPA = function() {
     browser.get( 'http://127.0.0.1:9000' );
   };
 
-  // Does the current number set have duplicates?
-  this.hasDuplicates = function() {
-    return true;
+  // Build a frequency distribution of numbers within the list.
+  this.buildFreqDist = function( numberArray ) {
+    var freqDist = {};
+    numberArray.forEach(function( num ) {
+      if ( !(num in freqDist) ) {
+        freqDist[num] = 1;
+      } else {
+        freqDist[num] += 1;
+      }
+    });
+    return freqDist;
   };
 
-  this.getUniqueNumbers = function() {
-    return [1,2,3];
+  // Does the current number list have duplicates?
+  this.hasDuplicates = function( numberArray ) {
+    var fDist = this.buildFreqDist( numberArray );
+    for ( var k in fDist ) {
+      if ( fDist[k] > 1 ) return true;
+    }
+    return false;
   };
+
+  // Returns an array of unique numbers in list
+  this.getUniqueNumbers = function() {
+    var fDist = this.buildFreqDist( numberArray )
+    ,   uniq  = []
+    ;
+    for ( var k in fDist ) {
+      if ( fDist[k] === 1 ) uniq.push( k );
+    }
+    return uniq;
+  };
+};
+
+// Emulate a player interacting with an SPA
+var GamePlayer = function( page ) {
+  this.spa = page;
 
   this.removeOneDuplicateNumber = function() {
     // find a duplicate and click on it
   };
 
-  this.removeOneUniqueNumber = function() {
-    while ( !this.getUniqueNumbers().length ) {
-      this.removeOneDuplicateNumber();
-    }
-
-    var unique = this.getUniqueNumbers();
-    // remove one of the unique numbers
-  };
+  
 
   this.playToWin = function() {
     // successful gameplay scenario here
-    while ( this.hasDuplicates() ) {
+    while ( page.hasDuplicates() ) {
       this.removeOneDuplicateNumber();
     }
   };
 
+  // Keep clicking until defeat
   this.playToLoose = function() {
-    // remove a unique number to trigger defeat
-    this.removeOneUniqueNumber();
+    this.spa.numbers.each( function( button ) {
+      button.isEnabled().then(function( bEnabled ) {
+        // http://seleniumhq.org/exceptions/stale_element_reference.html
+        // @ToDo Stale element problem
+        if ( bEnabled ) button.click();
+      });
+    });
   };
 };
 
+
+
 describe('Number Game', function() {
 
-  var numbers = element.all( by.repeater('number in numbers') );
-
-  var SPA = new NumberGamePage();
-  
-  // var freqDistr = {}; // Count duplicates
-  // var hasDuplicates = function( numbers ) {
-  //   // ToDo
-  //   return true;
-  // };
+  var page    = new GamePage()
+  ,   player  = new GamePlayer(page)
+  ;
 
   beforeEach(function() {
-    browser.get('http://127.0.0.1:9000');
+    page.loadSPA();
   });
 
   it('should display game rules to the user', function() {
-    // I have my doubts if checking for an exact string match is flexible
-    // enough for elements with static copy - changes in text could lead 
-    // to test suite maintainability challenges for big projects.
-    // This particular test merely ensures a container
-    // element exists and is non-empty, which is good enough for my purposes here.
-    // Another option would be to use a RegEx looking for a chunk of text that's 
-    // unlikely to be paraphrased.
-    // A yet another alternative is to maintain a corpora of static copy seprately
-    // which would ensure data integrity between the app and the test suite.
-    // Needs further research.. 
-    expect( element( by.css('.game-instructions') ).getText() ).toBeTruthy();
+    /*
+      @DevNote 
+      I have my doubts if checking for an exact string match is flexible
+      enough for elements with static copy - changes in text could lead 
+      to test suite maintainability challenges for larger projects.
+
+      This particular test merely ensures a container
+      element exists and is non-empty, meaning that container contents can be 
+      updated without breaking the test.
+      
+      Another option would be to use a RegEx looking for a chunk of text that's 
+      unlikely to be paraphrased.
+      
+      Better still we could maintain a corpora of static copy separately from
+      our code base and insert it into both the system and test suites before each
+      serve/build/test.
+    */
+
+    page.gameRules.getText().then(function( text ) {
+      expect( text.length ).toBeGreaterThan( 0 );
+    });
   });
 
   it('should display ten numbers with some duplicates', function() {
-    expect( numbers.count() ).toEqual( 10 );
-    // expect( hasDuplicates( numbers ) ).toEqual( true );
+    expect( page.numbers.count() ).toEqual( 10 );
+
+    page.numbers.map(function( el ) {
+      return el.getText();
+    })
+    .then(function( numberArray ) {
+      expect( page.hasDuplicates( numberArray ) ).toEqual( true );
+    }); 
   });
 
   it('should recognise and communicate a defeat state', function() {
-  	expect( true ).toEqual( false );
+  	player.playToLoose( page );
+    page.defeatMessage.getText().then(function( text ) {
+      expect( text.length ).toBeGreaterThan( 0 );
+    });
   });
 
-  it('should recognise and communicate a victory state', function() {
-  	expect( true ).toEqual( false );
-  });
+  // it('should recognise and communicate a victory state', function() {
+  // 	expect( true ).toEqual( false );
+  // });
 
 });

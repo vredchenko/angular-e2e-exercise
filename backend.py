@@ -7,12 +7,12 @@ app = Flask(__name__)
 @app.route("/")
 def response():
   # Generate a set of ten random integers (between 1-5 ensures there will be duplicates)
-  numberSet = []
+  numerList = []
   for i in range( 10 ):
-    numberSet.append( randint(1,5) )
+    numerList.append( randint(1,5) )
 
   # Allow CORS, based on: https://gist.github.com/pamelafox/1195953
-  response = make_response( json.dumps(numberSet) )
+  response = make_response( json.dumps(numerList) )
   response.headers['Access-Control-Allow-Origin'] = request.headers['Origin']
   
   return response

@@ -6,6 +6,7 @@ Solution for https://gist.github.com/bratchenko/990f024e11fd09e6b6bf
 Please make sure you have python, pip, node, and npm installed.
 
 ```
+pip install Flask
 npm install
 bower install
 ```
