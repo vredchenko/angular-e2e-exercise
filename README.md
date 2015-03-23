@@ -3,40 +3,36 @@ Solution for https://gist.github.com/bratchenko/990f024e11fd09e6b6bf
 
 ### Install dependenices
 
-Please make sure you have python, pip, node, and nvm installed.
+Please make sure you have python, pip, node, and npm installed.
 
+```
 npm install
 bower install
+```
 
-Launch the b/e like so:
-
+Launch the b/e:
 ```
 python backend.py
 ```
 
-Lanuch the f/e like so:
-
+Lanuch the f/e:
 ```
 grunt serve
 ```
 
 Or build it using:
-
 ```
 grunt build
 ```
-
 and run index.html found in dist/
 
-Run unit tests like so:
-
+Run unit tests:
 ```
-webdriver-manager start
 grunt test
 ```
 
-Run e2e tests like so:
-
+Run e2e tests:
 ```
-protractor test/spec/scenarios/conf.js
+webdriver-manager start
+protractor test/scenarios/conf.js
 ```
