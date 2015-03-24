@@ -6,6 +6,6 @@
 <p ng-if="defeated" class="game-over"> Game Over! </p>
 <p ng-if="victorious" class="victory"> Victory! </p>
 
-<button ng-repeat="number in numbers track by $index" 
-  type="button" class="btn btn-primary btn-lg" ng-class="value_{{number}}"
-  ng-bind="number" ng-click="playerMove( $index )" ng-disabled="!gameOngoing"></button>
+<input type="button" ng-repeat="number in numbers track by $index" 
+  type="button" class="btn btn-primary btn-lg" 
+  value="{{number}}" ng-click="playerMove( $index )" ng-disabled="!gameOngoing"></button>

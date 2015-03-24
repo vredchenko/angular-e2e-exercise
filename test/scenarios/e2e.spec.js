@@ -1,6 +1,6 @@
 'use strict';
 
-// Organise SPA-related stuff
+// Group SPA-related stuff
 var GamePage = function() {
 
   // DOM element selectors
@@ -14,7 +14,7 @@ var GamePage = function() {
   };
 
   // Build a frequency distribution of numbers within the list.
-  this.buildFreqDist = function( numberArray ) {
+  this.buildFreqDist = function( numberArray ) { // ToDo memoziation
     var freqDist = {};
     numberArray.forEach(function( num ) {
       if ( !(num in freqDist) ) {
@@ -27,7 +27,7 @@ var GamePage = function() {
   };
 
   // Does the current number list have duplicates?
-  this.hasDuplicates = function( numberArray ) {
+  this.hasDuplicates = function( numberArray ) { // ToDo memoziation
     var fDist = this.buildFreqDist( numberArray );
     for ( var k in fDist ) {
       if ( fDist[k] > 1 ) return true;
@@ -36,7 +36,7 @@ var GamePage = function() {
   };
 
   // Returns an array of unique numbers in list
-  this.getUniqueNumbers = function() {
+  this.getUniqueNumbers = function( numberArray ) { // ToDo memoziation
     var fDist = this.buildFreqDist( numberArray )
     ,   uniq  = []
     ;
@@ -51,28 +51,49 @@ var GamePage = function() {
 var GamePlayer = function( page ) {
   this.spa = page;
 
-  this.removeOneDuplicateNumber = function() {
-    // find a duplicate and click on it
+  this.clickNumber = function( integerValue ) {
+    // find the first occurance of integerValue and eliminate it.
+    element(by.css('[value="' + integerValue + '"]')).click();
+    // console.log( 'clicked a button with number: ' + integerValue );
   };
 
-  
-
-  this.playToWin = function() {
-    // successful gameplay scenario here
-    while ( page.hasDuplicates() ) {
-      this.removeOneDuplicateNumber();
+  this.playToWin = function( numberArray ) {
+    var fDist         = this.spa.buildFreqDist( numberArray )
+    ,   gamePlan      = {}
+    ,   number        = null
+    ;
+    // Decrementing each key gets us a model of how many time to click each number
+    for ( number in fDist ) {
+      gamePlan[number] = fDist[number] - 1;
+    }
+    // console.log( 'the game plan is: ', gamePlan );
+    for ( number in gamePlan ) {
+      for ( var i=0; i < gamePlan[number]; i++ ) {
+        this.clickNumber( number );  
+      }
     }
   };
 
-  // Keep clicking until defeat
-  this.playToLoose = function() {
-    this.spa.numbers.each( function( button ) {
-      button.isEnabled().then(function( bEnabled ) {
-        // http://seleniumhq.org/exceptions/stale_element_reference.html
-        // @ToDo Stale element problem
-        if ( bEnabled ) button.click();
-      });
-    });
+  this.playToLoose = function( numberArray ) {
+    var fDist         = this.spa.buildFreqDist( numberArray )
+    ,   pickedNumber  = null
+    ;
+    // Of 10 ranom numbers 1:5 we are guaranteed to have duplicates.
+    // We are not guaranteed to have a unique number, 
+    // but if we do - it's enough to eliminate it to reach a defeat state.
+    if ( this.spa.getUniqueNumbers( numberArray ).length ) {
+      // console.log( 'list has at least one unique number', fDist );
+      pickedNumber = this.spa.getUniqueNumbers( numberArray )[0];
+    }
+    // Otherwise all numbers have duplicates - pick one and keep elminating it.
+    else {
+      // console.log( 'all numbers in array are duplicates', fDist );
+      pickedNumber = Object.keys( fDist )[0];
+    }
+    // console.log( 'picked: ' + pickedNumber );
+    for (var i=0; i < fDist[pickedNumber]; i++) {
+      this.clickNumber( pickedNumber );
+    }
   };
 };
 
@@ -116,7 +137,7 @@ describe('Number Game', function() {
     expect( page.numbers.count() ).toEqual( 10 );
 
     page.numbers.map(function( el ) {
-      return el.getText();
+      return el.getAttribute('value');
     })
     .then(function( numberArray ) {
       expect( page.hasDuplicates( numberArray ) ).toEqual( true );
@@ -124,14 +145,30 @@ describe('Number Game', function() {
   });
 
   it('should recognise and communicate a defeat state', function() {
-  	player.playToLoose( page );
+  	page.numbers.map(function( el ) {
+      return el.getAttribute('value');
+    })
+    .then(function( numberArray ) {
+      player.playToLoose( numberArray );
+    });
+
     page.defeatMessage.getText().then(function( text ) {
+      expect( text.length ).toBeGreaterThan( 0 );
+    });  
+    
+  });
+
+  it('should recognise and communicate a victory state', function() {
+  	page.numbers.map(function( el ) {
+      return el.getAttribute('value');
+    })
+    .then(function( numberArray ) {
+      player.playToWin( numberArray );
+    });
+
+    page.victoryMessage.getText().then(function( text ) {
       expect( text.length ).toBeGreaterThan( 0 );
     });
   });
-
-  // it('should recognise and communicate a victory state', function() {
-  // 	expect( true ).toEqual( false );
-  // });
 
 });
